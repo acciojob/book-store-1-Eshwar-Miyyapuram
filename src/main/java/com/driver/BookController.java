@@ -45,30 +45,95 @@ public class BookController {
     // post request /create-book
     // pass book as request body
     @PostMapping("/create-book")
-    public ResponseEntity<Book> createBook(@RequestBody Book book){
+    public ResponseEntity<Book> createBook(@RequestBody()Book book){
+
         // Your code goes here.
+        book.setId(this.id);
+        bookList.add(book);
+        id++;
         return new ResponseEntity<>(book, HttpStatus.CREATED);
     }
+
 
     // get request /get-book-by-id/{id}
     // pass id as path variable
     // getBookById()
+    @GetMapping("/get-book-by-id/{id}")
+    public ResponseEntity<Book> getBookById(@PathVariable("id")int id){
+        Book curr_book=null;
+        for(Book book : bookList){
+            if(id==book.getId()){
+                curr_book=book;
+            }
+        }
+        return new ResponseEntity<>(curr_book,HttpStatus.ACCEPTED);
+
+    }
 
     // delete request /delete-book-by-id/{id}
     // pass id as path variable
     // deleteBookById()
+    @DeleteMapping("/delete-book-by-id/{id}")
+    public ResponseEntity<String> deleteBookById(@PathVariable("id") int id){
+
+        for(Book book: bookList){
+            if(id==book.getId()){
+                bookList.remove(book);
+                return new ResponseEntity("Deleted",HttpStatus.OK);
+            }
+        }
+
+        return new ResponseEntity<>("notfound", HttpStatus.OK);
+
+    }
 
     // get request /get-all-books
     // getAllBooks()
 
+    @GetMapping("/get-all-books")
+    public ResponseEntity<List<Book>> getAllBooks(){
+        return new ResponseEntity<>(bookList,HttpStatus.ACCEPTED);
+    }
+
     // delete request /delete-all-books
     // deleteAllBooks()
+    @DeleteMapping("/delete-all-books")
+    public ResponseEntity<String> deleteAllBooks(){
+        bookList = new ArrayList<>();
+        this.id=1;
+        return new ResponseEntity<>("Deleted all books",HttpStatus.ACCEPTED);
+    }
 
     // get request /get-books-by-author
     // pass author name as request param
     // getBooksByAuthor()
 
+    @GetMapping("/get-books-by-author")
+    public ResponseEntity<List<Book>> getBooksByAuthor(@RequestParam("author")String author){
+       List<Book> authorbookList = new ArrayList<>();
+
+       for(Book book: bookList){
+           if(book.getAuthor().equals(author)){
+               authorbookList.add(book);
+           }
+       }
+
+        return new ResponseEntity<>(authorbookList,HttpStatus.ACCEPTED);
+    }
+
     // get request /get-books-by-genre
     // pass genre name as request param
     // getBooksByGenre()
+    @GetMapping("/get-books-by-genre")
+    public ResponseEntity<List<Book>> getBooksByGenre(@RequestParam("genre")String genre){
+        List<Book> authorBookList = new ArrayList<>();
+
+        for(Book book: bookList){
+            if(book.getGenre().equals(genre)){
+                authorBookList.add(book);
+            }
+        }
+
+        return new ResponseEntity<>(authorBookList,HttpStatus.ACCEPTED);
+    }
 }
